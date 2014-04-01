@@ -132,7 +132,7 @@ func (s *Store) HashSet(hash, key string, value interface{}) error {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Set key to hold the string value. If key already holds a value, it is overwritten, regardless of 
+// Set key to hold the string value. If key already holds a value, it is overwritten, regardless of
 // its type. Any previous time to live associated with the key is discarded on successful SET operation.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) Set(key string, value interface{}) error {
@@ -143,11 +143,10 @@ func (s *Store) Set(key string, value interface{}) error {
 		return err
 	}
 
-	b, err := msgpack.Marshal(value); 
-	
+	b, err := msgpack.Marshal(value)
 	if err != nil {
 		return err
-	} 
+	}
 
 	if _, err := conn.Do("SET", key, b); err != nil {
 		return err
@@ -172,8 +171,7 @@ func (s *Store) SetWithTTL(key string, value interface{}, ttl int) error {
 		return err
 	}
 
-	_, err = conn.Do("SETEX", key, ttl, b)
-	if err != nil {
+	if _, err = conn.Do("SETEX", key, ttl, b); err != nil {
 		return err
 	}
 
@@ -271,9 +269,7 @@ func (s *Store) HashGetValues(hash string) ([]interface{}, error) {
 	out := make([]interface{}, len(vals))
 
 	for n, val := range vals {
-		err = msgpack.Unmarshal(val.([]byte), &out[n])
-
-		if err != nil {
+		if err = msgpack.Unmarshal(val.([]byte), &out[n]); err != nil {
 			return nil, err
 		}
 	}
@@ -366,9 +362,7 @@ func (s *Store) Get(key string) (interface{}, error) {
 	}
 
 	var out interface{}
-	err = msgpack.Unmarshal(b, &out)
-
-	if err != nil {
+	if err = msgpack.Unmarshal(b, &out); err != nil {
 		return nil, err
 	}
 

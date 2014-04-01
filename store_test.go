@@ -29,16 +29,12 @@ func TestSetGet(t *testing.T) {
 	key := "testKey1"
 	value := "This is a test"
 
-	err := st.Delete(key)
-
-	if err != nil {
+	if err := st.Delete(key); err != nil {
 		t.Error("cannot delete testKey :: ", err.Error())
 		t.Fail()
 	}
 
-	err = st.Set(key, value)
-
-	if err != nil {
+	if err := st.Set(key, value); err != nil {
 		t.Error("set error :: ", err.Error())
 		t.Fail()
 	}
@@ -65,9 +61,7 @@ func TestHashSetGet(t *testing.T) {
 
 	hash := "testHash"
 
-	err := st.Delete(hash)
-
-	if err != nil {
+	if err := st.Delete(hash); err != nil {
 		t.Error("cannot delete testHash :: ", err.Error())
 		t.Fail()
 	}
@@ -75,9 +69,8 @@ func TestHashSetGet(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		field := fmt.Sprintf("hashfield%d", i)
 		value := fmt.Sprintf("hashvalue%d", i)
-		err := st.HashSet(hash, field, value)
 
-		if err != nil {
+		if err := st.HashSet(hash, field, value); err != nil {
 			t.Error("hash set error :: ", err.Error())
 			t.Fail()
 		}
@@ -133,7 +126,7 @@ func TestHashSetGet(t *testing.T) {
 	if res2 == nil || len(res2) != 5 {
 		t.Error(fmt.Sprintf("invalid hash get values result %+v", res2))
 		t.Fail()
-	} 
+	}
 
 	for i := 0; i < 5; i++ {
 		field := fmt.Sprintf("hashfield%d", i)
