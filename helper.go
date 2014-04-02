@@ -6,22 +6,22 @@ import (
 //"time"
 )
 
-type KeysEnumFunc func(key string) error
+type FieldsEnumFunc func(field string) error
 type ValuesEnumFunc func(value interface{}) error
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Get all Keys from a hash. If the Hash is not available or empty, it will return nil, nil.
+// Enumerate all fields from Hash
 ////////////////////////////////////////////////////////////////////////////////////////////////
-func (s *Store) HashEnumerateKeys(hash string, enumerate KeysEnumFunc) error {
+func (s *Store) HashEnumerateFields(hash string, enumerate FieldsEnumFunc) error {
 
-	keys, err := s.HashGetKeys(hash)
+	fields, err := s.HashGetFields(hash)
 	if err != nil {
 		return err
 	}
 
-	if keys != nil {
-		for _, key := range keys {
-			if err := enumerate(key); err != nil {
+	if fields != nil {
+		for _, field := range fields {
+			if err := enumerate(field); err != nil {
 				return err
 			}
 		}
@@ -31,7 +31,7 @@ func (s *Store) HashEnumerateKeys(hash string, enumerate KeysEnumFunc) error {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Get all Keys from a hash. If the Hash is not available or empty, it will return nil, nil.
+// Enumerate all values from Hash
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) HashEnumerateValues(hash string, enumerate ValuesEnumFunc) error {
 
@@ -41,7 +41,7 @@ func (s *Store) HashEnumerateValues(hash string, enumerate ValuesEnumFunc) error
 	}
 
 	if vals != nil {
-		for _, val := range values {
+		for _, val := range vals {
 			if err := enumerate(val); err != nil {
 				return err
 			}
