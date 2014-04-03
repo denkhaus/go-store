@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bitbucket.org/mendsley/tcgl/asserts"
 	"fmt"
 	"testing"
 )
@@ -9,72 +10,43 @@ import (
 // TestHashSetGet
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 func TestHashSetGetSizeGetFieldsGetValues(t *testing.T) {
+	assert := asserts.NewTestingAsserts(t, true)
 	st := createStore(t)
 	defer st.Close()
 
 	hash := "testHash"
 
-	if err := st.Delete(hash); err != nil {
-		t.Error("cannot delete testHash :: ", err.Error())
-		t.Fail()
-	}
+	err := st.Delete(hash)
+	assert.Nil(err, "Error should be nil.")
 
 	for i := 0; i < 5; i++ {
 		field := fmt.Sprintf("hashfield%d", i)
 		value := fmt.Sprintf("hashvalue%d", i)
 
-		if err := st.HashSet(hash, field, value); err != nil {
-			t.Error("hash set error :: ", err.Error())
-			t.Fail()
-		}
+		err := st.HashSet(hash, field, value)
+		assert.Nil(err, "Error should be nil.")
 	}
 
 	hSize, err := st.HashSize(hash)
-
-	if err != nil {
-		t.Error("hash size error1 :: ", err.Error())
-		t.Fail()
-	}
-
-	if hSize != 5 {
-		t.Error(fmt.Sprintf("invalid HashSize, expected 5, result ::%d ", hSize))
-		t.Fail()
-	}
+	assert.Nil(err, "Error should be nil.")
+	assert.Equal(hSize, 5, "invalid HashSize")
 
 	for i := 0; i < 5; i++ {
 		field := fmt.Sprintf("hashfield%d", i)
 		value := fmt.Sprintf("hashvalue%d", i)
+
 		res, err := st.HashGet(hash, field)
 
-		if err != nil {
-			t.Error("hash get error :: ", err.Error())
-			t.Fail()
-		}
-
-		if res != value {
-			t.Error(fmt.Sprintf("hashget: wrong value %s, expected %s", res, value))
-			t.Fail()
-		}
+		assert.Nil(err, "Error should be nil.")
+		assert.Equal(res, value, "hashget: wrong value")
 	}
 
 	res1, err := st.HashGetFields(hash)
-
-	if err != nil {
-		t.Error("hash get fields error :: ", err.Error())
-		t.Fail()
-	}
-
-	if res1 == nil || len(res1) != 5 {
-		t.Error(fmt.Sprintf("invalid hash get fields result %+v", res1))
-		t.Fail()
-	}
+	assert.Nil(err, "Error should be nil.")
+	assert.Length(res1, 5, "invalid hash get fields result")
 
 	res2, err := st.HashGetValues(hash)
-
-	if err != nil {
-		t.Error("hash get values error :: ", err.Error())
-		t.Fail()
-	}
+	assert.Nil(err, "Error should be nil.")
 
 	if res2 == nil || len(res2) != 5 {
 		t.Error(fmt.Sprintf("invalid hash get values result %+v", res2))
@@ -99,26 +71,15 @@ func TestHashSetGetSizeGetFieldsGetValues(t *testing.T) {
 	for i := 0; i < 5; i++ {
 
 		hSize1, err := st.HashSize(hash)
-
-		if err != nil {
-			t.Error("hash size error2 :: ", err.Error())
-			t.Fail()
-		}
+		assert.Nil(err, "Error should be nil.")
 
 		field := fmt.Sprintf("hashfield%d", i)
-		_, err = st.HashDeleteField(hash, field)
 
-		if err != nil {
-			t.Error("hashdeletefield error :: ", err.Error())
-			t.Fail()
-		}
+		_, err = st.HashDeleteField(hash, field)
+		assert.Nil(err, "Error should be nil.")
 
 		hSize2, err := st.HashSize(hash)
-
-		if err != nil {
-			t.Error("hash size error3 :: ", err.Error())
-			t.Fail()
-		}
+		assert.Nil(err, "Error should be nil.")
 
 		if hSize2 >= hSize1 {
 			t.Error(fmt.Sprintf("invalid HashSize, values %d, %d ", hSize1, hSize2))

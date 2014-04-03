@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bitbucket.org/mendsley/tcgl/asserts"
 	"fmt"
 	"testing"
 )
@@ -9,31 +10,45 @@ import (
 // TestSetGet
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 func TestBasicSetGet(t *testing.T) {
+	assert := asserts.NewTestingAsserts(t, true)
 	st := createStore(t)
 	defer st.Close()
 
 	key := "testKey1"
 	value := "This is a test"
 
-	if err := st.Delete(key); err != nil {
-		t.Error("cannot delete testKey :: ", err.Error())
-		t.Fail()
-	}
+	err := st.Delete(key)
+	assert.Nil(err, "Error should be nil.")
 
-	if err := st.Set(key, value); err != nil {
-		t.Error("set error :: ", err.Error())
-		t.Fail()
-	}
+	err = st.Set(key, value)
+	assert.Nil(err, "Error should be nil.")
 
 	res, err := st.Get(key)
+	assert.Nil(err, "Error should be nil.")
+	assert.Equal(res, value, "TestGetSet wrong value")
+}
 
-	if err != nil {
-		t.Error("get error :: ", err.Error())
-		t.Fail()
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// TestSetGet
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+func TestEnumerate(t *testing.T) {
+	assert := asserts.NewTestingAsserts(t, true)
+	st := createStore(t)
+	defer st.Close()
+
+	keyBase := "testEnumerate%d"
+	valueBase := "enumerateTestValue%d"
+	
+	for i:=5; i > 0;i--{
+	    key := fmt.Sprintf(keyBase, i)
+		value := fmt.Sprintf(valueBase, i)
+	    err := st.Set(key, value)
+	    assert.Nil(err, "Error should be nil.")
 	}
 
-	if res != value {
-		fmt.Println("TestGetSet wrong expected value::" + res.(string))
-		t.Fail()
-	}
+	cursor, res, err := st.Enumerate(0, "testEnu*", 5)
+	assert.Nil(err, "Error should be nil.")
+	assert.Length(res, 5, "enumerate res return wrong") 
+	assert.Equal(cursor, 0, "enumerate cursor return wrong")
 }

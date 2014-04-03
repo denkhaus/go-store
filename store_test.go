@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bitbucket.org/mendsley/tcgl/asserts"
 	"testing"
 )
 
@@ -8,12 +9,10 @@ import (
 // Create a Basic Store for testing
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 func createStore(t *testing.T) *Store {
-	st, err := NewStore(10, "tcp", ":6379", "")
+	assert := asserts.NewTestingAsserts(t, true)
 
-	if err != nil {
-		t.Error("testing store: cannot create store :: ", err.Error())
-		t.Fail()
-	}
+	st, err := NewStore(10, "tcp", ":6379", "")
+	assert.Nil(err, "Error should be nil.")
 
 	return st
 }

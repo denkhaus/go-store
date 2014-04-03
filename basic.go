@@ -100,6 +100,30 @@ func (s *Store) Delete(key string) error {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// Enumerate
+////////////////////////////////////////////////////////////////////////////////////////////////
+func (s *Store) Enumerate(cursor int, match string, count int) (int, []string, error) {
+	conn := s.Pool.Get()
+	defer conn.Close()
+
+	data, err := conn.Do("SCAN", cursor, "MATCH", match, "COUNT", count)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	if data == nil {
+		return 0, nil, nil
+	}
+
+	vals, err := redis.Values(data, err)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return vals[0].(int), vals[1].([]string), nil
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 // Decode Values from Redis Response
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) DecodeValues(values []interface{}) ([]interface{}, error) {
