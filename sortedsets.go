@@ -149,7 +149,7 @@ func (s *Store) SortedSetGetDesc(set string, scoreMin float64, scoreMax float64)
 // Removes all elements in the sorted set stored at key with a score between min and max (inclusive).
 // Returns the number of elements removed.
 ////////////////////////////////////////////////////////////////////////////////////////////////
-func (s *Store) SortedSetDeleteByScore(set string, scoreMin float64, scoreMax float64) (int, error) {
+func (s *Store) SortedSetDeleteByScore(key string, scoreMin float64, scoreMax float64) (int, error) {
 	conn := s.Pool.Get()
 	defer conn.Close()
 
@@ -160,7 +160,7 @@ func (s *Store) SortedSetDeleteByScore(set string, scoreMin float64, scoreMax fl
 	scMin := strconv.FormatFloat(scoreMin, 'g', -1, 64)
 	scMax := strconv.FormatFloat(scoreMax, 'g', -1, 64)
 
-	data, err := conn.Do("ZREMRANGEBYSCORE", set, scMin, scMax)
+	data, err := conn.Do("ZREMRANGEBYSCORE", key, scMin, scMax)
 	if err != nil {
 		return 0, err
 	}
@@ -181,6 +181,14 @@ func (s *Store) SortedSetDeleteByScore(set string, scoreMin float64, scoreMax fl
 // Removes all elements in the sorted set stored at key.
 // Returns the number of elements removed.
 ////////////////////////////////////////////////////////////////////////////////////////////////
-func (s *Store) SortedSetDeleteAll(set string) (int, error) {
-	return SortedSetDeleteByScore(set, 0, -1)
+func (s *Store) SortedSetDeleteAll(key string) (int, error) {
+	return s.SortedSetDeleteByScore(key, 0, -1)
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Get all elements in the sorted set stored at key.
+// Returns the number of elements removed.
+////////////////////////////////////////////////////////////////////////////////////////////////
+func (s *Store) SortedSetGetAll(key string) ([]interface{}, error) {
+	return s.SortedSetGet(key, 0, -1)
 }
