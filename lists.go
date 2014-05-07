@@ -18,13 +18,11 @@ func (s *Store) ListPush(list, key string, value interface{}) error {
 	}
 
 	b, err := msgpack.Marshal(value)
-
 	if err != nil {
 		return err
 	}
 
 	_, err = conn.Do("LPUSH", list, key, b)
-
 	if err != nil {
 		return err
 	}

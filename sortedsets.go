@@ -176,3 +176,11 @@ func (s *Store) SortedSetDeleteByScore(set string, scoreMin float64, scoreMax fl
 
 	return res, nil
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Removes all elements in the sorted set stored at key.
+// Returns the number of elements removed.
+////////////////////////////////////////////////////////////////////////////////////////////////
+func (s *Store) SortedSetDeleteAll(set string) (int, error) {
+	return SortedSetDeleteByScore(set, 0, -1)
+}

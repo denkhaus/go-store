@@ -56,7 +56,6 @@ func (s *Store) HashGet(hash, key string) (interface{}, error) {
 
 	var out interface{}
 	err = msgpack.Unmarshal(b, &out)
-
 	if err != nil {
 		return nil, err
 	}
