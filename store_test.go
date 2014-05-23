@@ -1,7 +1,7 @@
 package store
 
 import (
-	"bitbucket.org/mendsley/tcgl/asserts"
+	"github.com/denkhaus/tcgl/asserts"
 	"testing"
 )
 

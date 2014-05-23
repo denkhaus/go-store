@@ -23,22 +23,8 @@ func (s *Store) SortedSetSet(set string, score float64, value interface{}) (int,
 	}
 
 	sc := strconv.FormatFloat(score, 'g', -1, 64)
-
 	data, err := conn.Do("ZADD", set, sc, b)
-	if err != nil {
-		return 0, err
-	}
-
-	if data == nil {
-		return 0, nil
-	}
-
-	res, err := redis.Int(data, err)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
+	return redis.Int(data, err)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,22 +40,8 @@ func (s *Store) SortedSetSize(set string, scoreMin float64, scoreMax float64) (i
 
 	scMin := strconv.FormatFloat(scoreMin, 'g', -1, 64)
 	scMax := strconv.FormatFloat(scoreMax, 'g', -1, 64)
-
 	data, err := conn.Do("ZCOUNT", set, scMin, scMax)
-	if err != nil {
-		return 0, err
-	}
-
-	if data == nil {
-		return 0, nil
-	}
-
-	res, err := redis.Int(data, err)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
+	return redis.Int(data, err)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,22 +131,8 @@ func (s *Store) SortedSetDeleteByScore(key string, scoreMin float64, scoreMax fl
 
 	scMin := strconv.FormatFloat(scoreMin, 'g', -1, 64)
 	scMax := strconv.FormatFloat(scoreMax, 'g', -1, 64)
-
 	data, err := conn.Do("ZREMRANGEBYSCORE", key, scMin, scMax)
-	if err != nil {
-		return 0, err
-	}
-
-	if data == nil {
-		return 0, nil
-	}
-
-	res, err := redis.Int(data, err)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
+	return redis.Int(data, err)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
