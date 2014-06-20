@@ -8,6 +8,7 @@ import (
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Set key to hold the string value. If key already holds a value, it is overwritten, regardless of
 // its type. Any previous time to live associated with the key is discarded on successful SET operation.
+// Returns error if operation isn't successfull.
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) Set(key string, value interface{}) error {
 	conn := s.Pool.Get()
@@ -22,11 +23,8 @@ func (s *Store) Set(key string, value interface{}) error {
 		return err
 	}
 
-	if _, err := conn.Do("SET", key, b); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := conn.Do("SET", key, b)
+	return err
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,11 +43,8 @@ func (s *Store) SetWithTTL(key string, value interface{}, ttl int) error {
 		return err
 	}
 
-	if _, err = conn.Do("SETEX", key, ttl, b); err != nil {
-		return err
-	}
-
-	return nil
+	_, err = conn.Do("SETEX", key, ttl, b)
+	return err
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,14 +59,6 @@ func (s *Store) Get(key string) (interface{}, error) {
 	}
 
 	data, err := conn.Do("GET", key)
-	if err != nil {
-		return nil, err
-	}
-
-	if data == nil {
-		return nil, nil
-	}
-
 	b, err := redis.Bytes(data, err)
 	if err != nil {
 		return nil, err
@@ -92,11 +79,8 @@ func (s *Store) Delete(key string) error {
 	conn := s.Pool.Get()
 	defer conn.Close()
 
-	if _, err := conn.Do("DEL", key); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := conn.Do("DEL", key)
+	return err
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -160,17 +144,16 @@ func (s *Store) EnumerateKeys(match string, enumFunc EnumFunc) error {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) DecodeValues(values []interface{}) ([]interface{}, error) {
 
-	if values != nil {
-		out := make([]interface{}, len(values))
+	if values == nil {
+		return nil, nil
+	}
+	out := make([]interface{}, len(values))
 
-		for n, val := range values {
-			if err := msgpack.Unmarshal(val.([]byte), &out[n]); err != nil {
-				return nil, err
-			}
+	for n, val := range values {
+		if err := msgpack.Unmarshal(val.([]byte), &out[n]); err != nil {
+			return nil, err
 		}
-
-		return out, nil
 	}
 
-	return nil, nil
+	return out, nil
 }

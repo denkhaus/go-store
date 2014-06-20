@@ -1,8 +1,8 @@
 package store
 
 import (
-	"bitbucket.org/mendsley/tcgl/asserts"
 	"fmt"
+	"github.com/denkhaus/tcgl/asserts"
 	"testing"
 )
 
@@ -28,7 +28,6 @@ func TestBasicSetGet(t *testing.T) {
 	assert.Equal(res, value, "TestGetSet wrong value")
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // TestSetGet
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,16 +38,16 @@ func TestEnumerate(t *testing.T) {
 
 	keyBase := "testEnumerate%d"
 	valueBase := "enumerateTestValue%d"
-	
-	for i:=5; i > 0;i--{
-	    key := fmt.Sprintf(keyBase, i)
+
+	for i := 5; i > 0; i-- {
+		key := fmt.Sprintf(keyBase, i)
 		value := fmt.Sprintf(valueBase, i)
-	    err := st.Set(key, value)
-	    assert.Nil(err, "Error should be nil.")
+		err := st.Set(key, value)
+		assert.Nil(err, "Error should be nil.")
 	}
 
 	cursor, res, err := st.Enumerate(0, "testEnu*", 5)
 	assert.Nil(err, "Error should be nil.")
-	assert.Length(res, 5, "enumerate res return wrong") 
+	assert.Length(res, 5, "enumerate res return wrong")
 	assert.Equal(cursor, 0, "enumerate cursor return wrong")
 }
