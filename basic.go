@@ -123,27 +123,36 @@ func (s *Store) Enumerate(cursor int, match string, count int) (int, []string, e
 	return vals[0].(int), vals[1].([]string), nil
 }
 
-type EnumFunc func(idx int, key string)
+type EnumFunc func(idx int, key string) error
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // EnumerateKeys
 ////////////////////////////////////////////////////////////////////////////////////////////////
 func (s *Store) EnumerateKeys(match string, enumFunc EnumFunc) error {
 
-	cursor := 0
+	var (
+		cursor = 0
+		res    []string
+		err    error
+	)
 
 	for cursor != -1 {
-		cursor, res, err := s.Enumerate(cursor, match, 10)
+		cursor, res, err = s.Enumerate(cursor, match, 10)
 		if err != nil {
 			return err
 		}
 
-		if len(res > 0) {
+		if len(res) > 0 {
 			for idx, key := range res {
-				enumFunc(idx, key)
+				err := enumFunc(idx, key)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
+
+	return nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

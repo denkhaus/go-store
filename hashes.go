@@ -132,20 +132,7 @@ func (s *Store) HashSize(hash string) (int, error) {
 	}
 
 	data, err := conn.Do("HLEN", hash)
-	if err != nil {
-		return 0, err
-	}
-
-	if data == nil {
-		return 0, nil
-	}
-
-	res, err := redis.Int(data, err)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
+	return redis.Int(data, err)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
